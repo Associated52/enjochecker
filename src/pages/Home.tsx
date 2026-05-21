@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AlertTriangle, CheckCircle, Search, RotateCcw, Activity, ShieldAlert, Zap, MousePointer2, Menu, X, Sun, Moon, Info, Mail } from 'lucide-react';
+import { AlertTriangle, Search, RotateCcw, ShieldAlert, Zap } from 'lucide-react';
 
 const CATS = [
   { id:'sns_post', icon:'🐦', label:'SNS 自分の投稿', desc:'X, Instagram など',
@@ -60,8 +60,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
 
   const tips = [
@@ -79,21 +77,6 @@ export default function Home() {
       return () => clearInterval(interval);
     }
   }, [loading]);
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    localStorage.setItem('theme', newTheme);
-  };
 
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -204,71 +187,8 @@ ${mainText}
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] transition-colors duration-300">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-[var(--bg)]/80 backdrop-blur-md border-b border-[var(--border)] flex items-center justify-between px-6">
-        <a href="/" id="nav-logo" className="font-sans text-base font-bold tracking-tight text-[var(--text)] no-underline">
-          炎上<em className="not-italic text-[var(--accent)]">チェッカー</em>
-        </a>
-        <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-2 text-[var(--text2)] hover:text-[var(--text)] transition-colors"
-        >
-          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </nav>
-
-      {/* Drawer Menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 bg-black/40 z-[60] backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-[var(--bg2)] border-l border-[var(--border)] z-[70] p-6 pt-20"
-            >
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="text-[10px] uppercase tracking-widest text-[var(--text3)] font-mono">Settings</div>
-                  <button 
-                    onClick={toggleTheme}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-sm"
-                  >
-                    <span className="flex items-center gap-3">
-                      {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-                      {theme === 'light' ? 'ダークモード' : 'ライトモード'}
-                    </span>
-                    <div className={`w-8 h-4 rounded-full relative transition-colors ${theme === 'dark' ? 'bg-[var(--accent)]' : 'bg-gray-300'}`}>
-                      <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${theme === 'dark' ? 'left-4.5' : 'left-0.5'}`} />
-                    </div>
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="text-[10px] uppercase tracking-widest text-[var(--text3)] font-mono">Menu</div>
-                  <button className="w-full flex items-center gap-3 p-3 text-sm text-[var(--text2)] hover:text-[var(--text)] transition-colors">
-                    <Info size={16} /> 利用規約
-                  </button>
-                  <button className="w-full flex items-center gap-3 p-3 text-sm text-[var(--text2)] hover:text-[var(--text)] transition-colors">
-                    <Mail size={16} /> お問い合わせ
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      <div className="max-w-[720px] mx-auto px-6 py-24 md:py-32 animate-fade-up">
+    <div className="bg-[var(--bg)] text-[var(--text)] transition-colors duration-300">
+      <div className="max-w-[720px] mx-auto px-4 sm:px-6 py-8 md:py-12 animate-fade-up">
         {!result && (
           <div className="mb-12">
             <h1 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight mb-4">
@@ -447,15 +367,15 @@ ${mainText}
             </div>
 
             {/* Score Block */}
-            <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-2xl p-8">
-              <div className="flex justify-between items-start gap-4 mb-4">
+            <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-2xl p-5 sm:p-8">
+              <div className="flex flex-col-reverse sm:flex-row justify-between items-start gap-3 sm:gap-4 mb-4">
                 <div>
-                  <div className="font-mono text-[12px] tracking-[1.5px] uppercase text-[var(--text2)] mb-1">Overall Risk Score</div>
-                  <div className="text-lg font-bold leading-tight" style={{ color: getColor(result.score) }}>
+                  <div className="font-mono text-[11px] sm:text-[12px] tracking-[1.5px] uppercase text-[var(--text2)] mb-1">Overall Risk Score</div>
+                  <div className="text-base sm:text-lg font-bold leading-tight" style={{ color: getColor(result.score) }}>
                     {getVerdict(result.score)}
                   </div>
                 </div>
-                <div className="font-mono text-6xl font-bold tracking-tighter" style={{ color: getColor(result.score) }}>
+                <div className="font-mono text-5xl sm:text-6xl font-bold tracking-tighter" style={{ color: getColor(result.score) }}>
                   {result.score}%
                 </div>
               </div>
@@ -468,7 +388,7 @@ ${mainText}
                   style={{ backgroundColor: getColor(result.score) }}
                 />
               </div>
-              <div className="flex justify-between font-mono text-[11px] text-[var(--text2)]">
+              <div className="flex justify-between font-mono text-[10px] sm:text-[11px] text-[var(--text2)] select-none">
                 <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
               </div>
             </div>
@@ -510,8 +430,8 @@ ${mainText}
                 </div>
               )}
 
-              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-4">
-                <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-4">
+                <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
                   問題箇所のハイライト
                 </div>
                 <div className="text-sm leading-[1.8] text-[var(--text2)]">
@@ -519,8 +439,8 @@ ${mainText}
                 </div>
               </div>
 
-              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-4">
-                <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-4">
+                <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
                   想定される反応・影響
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -534,8 +454,8 @@ ${mainText}
                 </div>
               </div>
 
-              <div className="bg-[var(--bg2)] border border(--border)] rounded-xl p-6 space-y-4">
-                <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-4">
+                <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
                   検出されたリスク要因
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -548,14 +468,14 @@ ${mainText}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-3">
-                  <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-3">
+                  <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
                     詳細分析
                   </div>
                   <p className="text-sm text-[var(--text2)] leading-relaxed">{result.analysis}</p>
                 </div>
-                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-3">
-                  <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-3">
+                  <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
                     改善提案
                   </div>
                   <p className="text-sm text-[var(--text2)] leading-relaxed">{result.suggestion}</p>
