@@ -52,6 +52,29 @@ interface AnalysisResult {
   suggestion: string;
 }
 
+function AdSenseLoading() {
+  useEffect(() => {
+    try {
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+    } catch (err) {
+      console.error('AdSense push error: ', err);
+    }
+  }, []);
+
+  return (
+    <div className="my-4 overflow-hidden flex justify-center w-full min-h-[100px] bg-[var(--bg2)] rounded-xl border border-[var(--border)] p-4 items-center">
+      <ins
+        className="adsbygoogle"
+        style={{ display: 'block', textAlign: 'center', width: '100%', minWidth: '100%' }}
+        data-ad-layout="in-article"
+        data-ad-format="fluid"
+        data-ad-client="ca-pub-8520638973048541"
+        data-ad-slot="6980258773"
+      />
+    </div>
+  );
+}
+
 export default function Home() {
   const [selCat, setSelCat] = useState<typeof CATS[0] | null>(null);
   const [selSub, setSelSub] = useState<string | null>(null);
@@ -60,23 +83,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [tipIndex, setTipIndex] = useState(0);
-
-  const tips = [
-    { title: "拡散防止のヒント", desc: "一度拡散された投稿を消去することは不可能です。送信前に一呼吸置きましょう。" },
-    { title: "リスク回避のコツ", desc: "主語を特定しない、または曖昧にすることで個人的な攻撃と捉えられにくくなります。" },
-    { title: "SNS事故に備える", desc: "スクリーンショットは文脈を無視して一人歩きします。図解や画像も要注意です。" },
-    { title: "企業の信頼を守る", desc: "個人のつぶやきでも、所属組織のブランドを傷つける可能性があることを意識しましょう。" }
-  ];
-
-  useEffect(() => {
-    if (loading) {
-      const interval = setInterval(() => {
-        setTipIndex((prev) => (prev + 1) % tips.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [loading]);
 
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -187,8 +193,8 @@ ${mainText}
   };
 
   return (
-    <div className="bg-[var(--bg)] text-[var(--text)] transition-colors duration-300">
-      <div className="max-w-[720px] mx-auto px-4 sm:px-6 py-8 md:py-12 animate-fade-up">
+    <div className="bg-[var(--bg)] text-[var(--text)]">
+      <div className="max-w-[720px] mx-auto px-6 py-24 md:py-32 animate-fade-up">
         {!result && (
           <div className="mb-12">
             <h1 className="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight mb-4">
@@ -201,302 +207,292 @@ ${mainText}
           </div>
         )}
 
-      {/* Step 1: Category */}
-      <section className="mb-8">
-        <div className="font-mono text-[13px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
-          Step 01 — カテゴリ選択
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-          {CATS.map(cat => (
-            <button 
-              key={cat.id}
-              onClick={() => { setSelCat(cat); setSelSub(null); setResult(null); }}
-              className={`flex items-start gap-3 p-4 rounded-xl border transition-all text-left ${selCat?.id === cat.id ? 'border-[var(--accent)] bg-[rgba(232,68,26,0.06)]' : 'border-[var(--border)] bg-[var(--bg2)] hover:bg-[var(--bg3)] hover:border-[var(--border2)]'}`}
+        {/* Step 1: Category */}
+        <section className="mb-8">
+          <div className="font-mono text-[13px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
+            Step 01 — カテゴリ選択
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+            {CATS.map(cat => (
+              <button 
+                key={cat.id}
+                onClick={() => { setSelCat(cat); setSelSub(null); setResult(null); }}
+                className={`flex items-start gap-3 p-4 rounded-xl border transition-all text-left ${selCat?.id === cat.id ? 'border-[var(--accent)] bg-[rgba(232,68,26,0.06)]' : 'border-[var(--border)] bg-[var(--bg2)] hover:bg-[var(--bg3)] hover:border-[var(--border2)]'}`}
+              >
+                <span className="text-xl shrink-0 mt-0.5">{cat.icon}</span>
+                <div>
+                  <div className={`text-sm font-medium ${selCat?.id === cat.id ? 'text-[var(--text)]' : 'text-[var(--text2)]'}`}>{cat.label}</div>
+                  <div className={`text-[12px] mt-1 transition-colors ${selCat?.id === cat.id ? 'text-[var(--text)] opacity-80' : 'text-gray-400'}`}>{cat.desc}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Step 1.5: Subcategory */}
+        <AnimatePresence>
+          {selCat && (
+            <motion.section 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="mb-8"
             >
-              <span className="text-xl shrink-0 mt-0.5">{cat.icon}</span>
-              <div>
-                <div className={`text-sm font-medium ${selCat?.id === cat.id ? 'text-[var(--text)]' : 'text-[var(--text2)]'}`}>{cat.label}</div>
-                <div className={`text-[12px] mt-1 transition-colors ${selCat?.id === cat.id ? 'text-[var(--text)] opacity-80' : 'text-gray-400'}`}>{cat.desc}</div>
+              <div className="font-mono text-[13px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
+                {selCat.label} — 種類を選択
               </div>
-            </button>
-          ))}
-        </div>
-      </section>
+              <div className="flex flex-wrap gap-2">
+                {selCat.subs.map(sub => (
+                  <button 
+                    key={sub}
+                    onClick={() => { setSelSub(sub); setResult(null); }}
+                    className={`px-3 py-1.5 rounded-md border font-mono text-[11px] transition-all ${selSub === sub ? 'border-[var(--accent)] text-[var(--accent)] bg-[rgba(232,68,26,0.08)]' : 'border-[var(--border)] text-[var(--text2)] bg-[var(--bg2)] hover:border-[var(--border2)] hover:text-[var(--text)]'}`}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
 
-      {/* Step 1.5: Subcategory */}
-      <AnimatePresence>
-        {selCat && (
-          <motion.section 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="mb-8"
-          >
-            <div className="font-mono text-[13px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
-              {selCat.label} — 種類を選択
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selCat.subs.map(sub => (
-                <button 
-                  key={sub}
-                  onClick={() => { setSelSub(sub); setResult(null); }}
-                  className={`px-3 py-1.5 rounded-md border font-mono text-[11px] transition-all ${selSub === sub ? 'border-[var(--accent)] text-[var(--accent)] bg-[rgba(232,68,26,0.08)]' : 'border-[var(--border)] text-[var(--text2)] bg-[var(--bg2)] hover:border-[var(--border2)] hover:text-[var(--text)]'}`}
-                >
-                  {sub}
-                </button>
-              ))}
-            </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
+        {/* Step 2: Form */}
+        <AnimatePresence>
+          {selSub && (
+            <motion.section 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="font-mono text-[13px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
+                Step 02 — 内容を入力
+              </div>
 
-      {/* Step 2: Form */}
-      <AnimatePresence>
-        {selSub && (
-          <motion.section 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            <div className="font-mono text-[13px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
-              Step 02 — 内容を入力
-            </div>
+              {selCat?.hasCtx && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-[var(--text2)]">{selCat.ctxLabel}</label>
+                  </div>
+                  <textarea 
+                    value={context}
+                    onChange={(e) => setContext(e.target.value)}
+                    rows={2}
+                    className="w-full bg-[var(--bg2)] border border-[var(--border)] rounded-lg p-3 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--border2)] transition-colors placeholder:text-[var(--text3)]"
+                    placeholder={selCat.ctxPlaceholder}
+                  />
+                </div>
+              )}
 
-            {selCat?.hasCtx && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm text-[var(--text2)]">{selCat.ctxLabel}</label>
+                  <label className="text-sm text-[var(--text2)]">チェックしたいテキスト <span className="text-[var(--accent)]">*</span></label>
                 </div>
                 <textarea 
-                  value={context}
-                  onChange={(e) => setContext(e.target.value)}
-                  rows={2}
+                  value={mainText}
+                  onChange={(e) => setMainText(e.target.value)}
+                  maxLength={500}
+                  rows={6}
+                  required
                   className="w-full bg-[var(--bg2)] border border-[var(--border)] rounded-lg p-3 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--border2)] transition-colors placeholder:text-[var(--text3)]"
-                  placeholder={selCat.ctxPlaceholder}
+                  placeholder={selCat?.mainPlaceholder}
                 />
+                <div className={`text-[13px] font-mono text-right transition-colors ${mainText.length >= 500 ? 'text-[var(--red)]' : mainText.length >= 400 ? 'text-[var(--yellow)]' : 'text-[var(--text2)]'}`}>
+                  {mainText.length} / 500 文字
+                </div>
               </div>
-            )}
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm text-[var(--text2)]">チェックしたいテキスト <span className="text-[var(--accent)]">*</span></label>
-              </div>
-              <textarea 
-                value={mainText}
-                onChange={(e) => setMainText(e.target.value)}
-                maxLength={500}
-                rows={6}
-                required
-                className="w-full bg-[var(--bg2)] border border-[var(--border)] rounded-lg p-3 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--border2)] transition-colors placeholder:text-[var(--text3)]"
-                placeholder={selCat?.mainPlaceholder}
-              />
-              <div className={`text-[13px] font-mono text-right transition-colors ${mainText.length >= 500 ? 'text-[var(--red)]' : mainText.length >= 400 ? 'text-[var(--yellow)]' : 'text-[var(--text2)]'}`}>
-                {mainText.length} / 500 文字
-              </div>
-            </div>
+              <div className="space-y-4">
+                <button 
+                  onClick={handleRunAnalysis}
+                  disabled={loading || !mainText.trim()}
+                  className="w-full bg-[var(--accent)] hover:bg-[var(--accent2)] disabled:bg-[var(--bg3)] disabled:text-[var(--text3)] disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      分析中...
+                    </>
+                  ) : (
+                    <>
+                      <Search size={18} />
+                      炎上リスクを診断する
+                    </>
+                  )}
+                </button>
 
-            <div className="space-y-4">
-              <button 
-                onClick={handleRunAnalysis}
-                disabled={loading || !mainText.trim()}
-                className="w-full bg-[var(--accent)] hover:bg-[var(--accent2)] disabled:bg-[var(--bg3)] disabled:text-[var(--text3)] disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    分析中...
-                  </>
-                ) : (
-                  <>
-                    <Search size={18} />
-                    炎上リスクを診断する
-                  </>
+                <div className="text-[11px] text-[var(--text3)] text-center leading-relaxed">
+                  本サービスをご利用いただくことで、<a href="/terms" className="underline underline-offset-2 hover:text-[var(--text2)]">利用規約</a>および<a href="/privacy" className="underline underline-offset-2 hover:text-[var(--text2)]">プライバシーポリシー</a>に<br />同意したものとみなされます。
+                </div>
+
+                {loading && (
+                  <div className="space-y-6 pt-4">
+                    <div className="space-y-3">
+                      <div className="h-0.5 bg-[var(--border)] overflow-hidden rounded-full">
+                        <div className="h-full bg-[var(--accent)] animate-loading-slide w-[40%] rounded-full" />
+                      </div>
+                      <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中...</div>
+                    </div>
+
+                    {/* AdSense Placement */}
+                    <AdSenseLoading />
+                  </div>
                 )}
-              </button>
 
-              <div className="text-[11px] text-[var(--text3)] text-center leading-relaxed">
-                本サービスをご利用いただくことで、<a href="/terms" className="underline underline-offset-2 hover:text-[var(--text2)]">利用規約</a>および<a href="/privacy" className="underline underline-offset-2 hover:text-[var(--text2)]">プライバシーポリシー</a>に<br />同意したものとみなされます。
+                {error && (
+                  <div className="p-4 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[var(--red)] text-sm flex gap-3 leading-relaxed">
+                    <AlertTriangle size={18} className="shrink-0" />
+                    {error}
+                  </div>
+                )}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
+        {/* Results */}
+        <AnimatePresence>
+          {result && (
+            <motion.div 
+              ref={resultRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 space-y-10"
+            >
+              <div className="font-mono text-[14px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
+                Diagnosis Result
               </div>
 
-              {loading && (
-                <div className="space-y-6 pt-4">
-                  <div className="space-y-3">
-                    <div className="h-0.5 bg-[var(--border)] overflow-hidden rounded-full">
-                      <div className="h-full bg-[var(--accent)] animate-loading-slide w-[40%] rounded-full" />
+              {/* Score Block */}
+              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-2xl p-8">
+                <div className="flex justify-between items-start gap-4 mb-4">
+                  <div>
+                    <div className="font-mono text-[12px] tracking-[1.5px] uppercase text-[var(--text2)] mb-1">Overall Risk Score</div>
+                    <div className="text-lg font-bold leading-tight" style={{ color: getColor(result.score) }}>
+                      {getVerdict(result.score)}
                     </div>
-                    <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中...</div>
                   </div>
-
-                  {/* Analysis Tips Add */}
+                  <div className="font-mono text-6xl font-bold tracking-tighter" style={{ color: getColor(result.score) }}>
+                    {result.score}%
+                  </div>
+                </div>
+                <div className="h-1 bg-[var(--bg3)] rounded-full overflow-hidden mb-2">
                   <motion.div 
-                    key={tipIndex}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-5 bg-[var(--bg3)] rounded-xl border border-[var(--border)] relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 left-0 w-1 h-full bg-[var(--accent)]" />
-                    <div className="text-[10px] font-mono text-[var(--accent)] mb-1 uppercase tracking-wider">Analysis Insight</div>
-                    <div className="font-bold text-sm mb-1">{tips[tipIndex].title}</div>
-                    <div className="text-xs text-[var(--text2)] leading-relaxed">{tips[tipIndex].desc}</div>
-                  </motion.div>
+                    initial={{ width: 0 }}
+                    animate={{ width: `${result.score}%` }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="h-full"
+                    style={{ backgroundColor: getColor(result.score) }}
+                  />
                 </div>
-              )}
-
-              {error && (
-                <div className="p-4 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[var(--red)] text-sm flex gap-3 leading-relaxed">
-                  <AlertTriangle size={18} className="shrink-0" />
-                  {error}
-                </div>
-              )}
-            </div>
-          </motion.section>
-        )}
-      </AnimatePresence>
-
-      {/* Results */}
-      <AnimatePresence>
-        {result && (
-          <motion.div 
-            ref={resultRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-12 space-y-10"
-          >
-            <div className="font-mono text-[14px] tracking-[2px] uppercase text-[var(--text2)] mb-3 flex items-center gap-2 after:content-[''] after:flex-grow after:h-[1px] after:bg-[var(--border)]">
-              Diagnosis Result
-            </div>
-
-            {/* Score Block */}
-            <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-2xl p-5 sm:p-8">
-              <div className="flex flex-col-reverse sm:flex-row justify-between items-start gap-3 sm:gap-4 mb-4">
-                <div>
-                  <div className="font-mono text-[11px] sm:text-[12px] tracking-[1.5px] uppercase text-[var(--text2)] mb-1">Overall Risk Score</div>
-                  <div className="text-base sm:text-lg font-bold leading-tight" style={{ color: getColor(result.score) }}>
-                    {getVerdict(result.score)}
-                  </div>
-                </div>
-                <div className="font-mono text-5xl sm:text-6xl font-bold tracking-tighter" style={{ color: getColor(result.score) }}>
-                  {result.score}%
+                <div className="flex justify-between font-mono text-[11px] text-[var(--text2)] select-none">
+                  <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
                 </div>
               </div>
-              <div className="h-1 bg-[var(--bg3)] rounded-full overflow-hidden mb-2">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${result.score}%` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
-                  className="h-full"
-                  style={{ backgroundColor: getColor(result.score) }}
-                />
-              </div>
-              <div className="flex justify-between font-mono text-[10px] sm:text-[11px] text-[var(--text2)] select-none">
-                <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
-              </div>
-            </div>
 
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {METRICS_DEF.map(def => {
-                const val = result.metrics[def.key] || 0;
-                return (
-                  <div key={def.key} className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-[var(--text2)]">{def.label}</span>
-                      <span className="font-mono text-sm font-bold" style={{ color: getColor(val) }}>{val}%</span>
+              {/* Metrics Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {METRICS_DEF.map(def => {
+                  const val = result.metrics[def.key] || 0;
+                  return (
+                    <div key={def.key} className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-[var(--text2)]">{def.label}</span>
+                        <span className="font-mono text-sm font-bold" style={{ color: getColor(val) }}>{val}%</span>
+                      </div>
+                      <div className="h-1 bg-[var(--bg3)] rounded-full overflow-hidden mb-2">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${val}%` }}
+                          transition={{ duration: 1.2, ease: 'easeOut' }}
+                          className="h-full"
+                          style={{ backgroundColor: getColor(val) }}
+                        />
+                      </div>
+                      <div className="text-[12px] text-[var(--text2)] leading-tight">{def.desc}</div>
                     </div>
-                    <div className="h-1 bg-[var(--bg3)] rounded-full overflow-hidden mb-2">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${val}%` }}
-                        transition={{ duration: 1.2, ease: 'easeOut' }}
-                        className="h-full"
-                        style={{ backgroundColor: getColor(val) }}
-                      />
+                  );
+                })}
+              </div>
+
+              {/* Details Card */}
+              <div className="space-y-3">
+                {(result.score >= 40 || (result.metrics.misread || 0) >= 40) && (
+                  <div className="bg-[rgba(239,68,68,0.05)] border border-[rgba(239,68,68,0.2)] rounded-xl p-5 flex gap-4 items-start animate-pulse">
+                    <ShieldAlert className="text-[var(--red)] shrink-0 mt-0.5" size={20} />
+                    <div className="text-[var(--red)]">
+                      <div className="font-bold text-sm mb-1">【拡散注意】実害発生のリスクがあります</div>
+                      <p className="text-[12px] opacity-90 leading-tight">この投稿は、スクリーンショットが拡散された際に本来の意図とは異なる文脈で解釈され、社会的非難を浴びる危険性が極めて高い状態です。</p>
                     </div>
-                    <div className="text-[12px] text-[var(--text2)] leading-tight">{def.desc}</div>
                   </div>
-                );
-              })}
-            </div>
+                )}
 
-            {/* Details Card */}
-            <div className="space-y-3">
-              {(result.score >= 40 || (result.metrics.misread || 0) >= 40) && (
-                <div className="bg-[rgba(239,68,68,0.05)] border border-[rgba(239,68,68,0.2)] rounded-xl p-5 flex gap-4 items-start animate-pulse">
-                  <ShieldAlert className="text-[var(--red)] shrink-0 mt-0.5" size={20} />
-                  <div className="text-[var(--red)]">
-                    <div className="font-bold text-sm mb-1">【拡散注意】実害発生のリスクがあります</div>
-                    <p className="text-[12px] opacity-90 leading-tight">この投稿は、スクリーンショットが拡散された際に本来の意図とは異なる文脈で解釈され、社会的非難を浴びる危険性が極めて高い状態です。</p>
+                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-4">
+                  <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                    問題箇所のハイライト
+                  </div>
+                  <div className="text-sm leading-[1.8] text-[var(--text2)]">
+                    {renderHighlight(mainText, result.riskWords, result.warnWords)}
                   </div>
                 </div>
-              )}
 
-              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-4">
-                <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
-                  問題箇所のハイライト
+                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-4">
+                  <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                    想定される反応・影響
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {result.reactions?.length > 0 ? result.reactions.map(r => (
+                      <span key={r} className="px-3 py-1 bg-[var(--bg3)] border border-[var(--border)] text-[var(--text2)] text-[11px] rounded-full select-none flex items-center gap-1.5 whitespace-nowrap">
+                        <Zap size={10} className="text-[var(--yellow)]" /> {r}
+                      </span>
+                    )) : (
+                      <span className="text-[12px] text-[var(--text3)]">特になし</span>
+                    )}
+                  </div>
                 </div>
-                <div className="text-sm leading-[1.8] text-[var(--text2)]">
-                  {renderHighlight(mainText, result.riskWords, result.warnWords)}
+
+                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-4">
+                  <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                    検出されたリスク要因
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {result.problems?.length > 0 ? result.problems.map(p => (
+                      <span key={p} className="px-3 py-1 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] text-[var(--red)] text-[10px] font-mono rounded select-none">{p}</span>
+                    )) : (
+                      <span className="px-3 py-1 bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] text-[var(--green)] text-[10px] font-mono rounded">リスク要因なし</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-3">
+                    <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                      詳細分析
+                    </div>
+                    <p className="text-sm text-[var(--text2)] leading-relaxed">{result.analysis}</p>
+                  </div>
+                  <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-6 space-y-3">
+                    <div className="font-mono text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
+                      改善提案
+                    </div>
+                    <p className="text-sm text-[var(--text2)] leading-relaxed">{result.suggestion}</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-4">
-                <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
-                  想定される反応・影響
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {result.reactions?.length > 0 ? result.reactions.map(r => (
-                    <span key={r} className="px-3 py-1 bg-[var(--bg3)] border border-[var(--border)] text-[var(--text2)] text-[11px] rounded-full select-none flex items-center gap-1.5 whitespace-nowrap">
-                      <Zap size={10} className="text-[var(--yellow)]" /> {r}
-                    </span>
-                  )) : (
-                    <span className="text-[12px] text-[var(--text3)]">特になし</span>
-                  )}
-                </div>
+              <div className="flex justify-center pt-4">
+                <button 
+                  onClick={() => {
+                    setResult(null);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="font-mono text-[13px] tracking-[1px] uppercase text-[var(--text2)] border border-[var(--border)] px-6 py-2 rounded-lg hover:border-[var(--border2)] hover:text-[var(--text)] transition-all flex items-center gap-2"
+                >
+                  <RotateCcw size={14} /> もう一度診断する
+                </button>
               </div>
-
-              <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-4">
-                <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
-                  検出されたリスク要因
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {result.problems?.length > 0 ? result.problems.map(p => (
-                    <span key={p} className="px-3 py-1 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] text-[var(--red)] text-[10px] font-mono rounded select-none">{p}</span>
-                  )) : (
-                    <span className="px-3 py-1 bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] text-[var(--green)] text-[10px] font-mono rounded">リスク要因なし</span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-3">
-                  <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
-                    詳細分析
-                  </div>
-                  <p className="text-sm text-[var(--text2)] leading-relaxed">{result.analysis}</p>
-                </div>
-                <div className="bg-[var(--bg2)] border border-[var(--border)] rounded-xl p-5 sm:p-6 space-y-3">
-                  <div className="font-mono text-[13px] sm:text-[14px] tracking-[1px] uppercase text-[var(--text2)]">
-                    改善提案
-                  </div>
-                  <p className="text-sm text-[var(--text2)] leading-relaxed">{result.suggestion}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-center pt-4">
-              <button 
-                onClick={() => {
-                  setResult(null);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="font-mono text-[13px] tracking-[1px] uppercase text-[var(--text2)] border border-[var(--border)] px-6 py-2 rounded-lg hover:border-[var(--border2)] hover:text-[var(--text)] transition-all flex items-center gap-2"
-              >
-                <RotateCcw size={14} /> もう一度診断する
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
