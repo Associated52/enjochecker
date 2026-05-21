@@ -53,24 +53,34 @@ interface AnalysisResult {
 }
 
 function AdSenseLoading() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    try {
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-    } catch (err) {
-      console.error('AdSense push error: ', err);
+    if (containerRef.current) {
+      containerRef.current.innerHTML = `
+        <ins class="adsbygoogle"
+             style="display:block; text-align:center; width:100%; min-width:100%; min-height:100px;"
+             data-ad-layout="in-article"
+             data-ad-format="fluid"
+             data-ad-client="ca-pub-8520638973048541"
+             data-ad-slot="6980258773"></ins>
+      `;
+      try {
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      } catch (err) {
+        console.error('AdSense push error: ', err);
+      }
     }
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+    };
   }, []);
 
   return (
     <div className="my-4 overflow-hidden flex justify-center w-full min-h-[100px] bg-[var(--bg2)] rounded-xl border border-[var(--border)] p-4 items-center">
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block', textAlign: 'center', width: '100%', minWidth: '100%' }}
-        data-ad-layout="in-article"
-        data-ad-format="fluid"
-        data-ad-client="ca-pub-8520638973048541"
-        data-ad-slot="6980258773"
-      />
+      <div ref={containerRef} className="w-full" />
     </div>
   );
 }
