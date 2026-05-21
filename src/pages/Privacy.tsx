@@ -23,9 +23,6 @@ export default function Privacy() {
             <li>
               <strong>入力テキスト情報:</strong> ユーザーが診断のために入力したテキスト情報は，AIによる分析を行うために使用されます。これらの情報は分析後に一定期間経過後，適切に削除されます。
             </li>
-            <li>
-              <strong>お問い合わせ情報:</strong> お問い合わせフォームに入力されたお名前，メールアドレス，お問い合わせ内容は，回答や連絡のために利用します。
-            </li>
           </ul>
         </div>
 
@@ -47,13 +44,6 @@ export default function Privacy() {
           <h2 className="text-base font-bold text-[var(--text)] border-l-2 border-[var(--accent)] pl-4">4. Cookieの利用</h2>
           <p>
             本サービスでは，ユーザーの利便性向上のため，Cookie（クッキー）を使用することがあります。ブラウザの設定によりCookieの受け取りを拒否することも可能です。
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <h2 className="text-base font-bold text-[var(--text)] border-l-2 border-[var(--accent)] pl-4">5. お問い合わせ先</h2>
-          <p>
-            プライバシーポリシーに関するお問い合わせは，本サービスの「お問い合わせ」ページよりお願いいたします。
           </p>
         </div>
       </section>
