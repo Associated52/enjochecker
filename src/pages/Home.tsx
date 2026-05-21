@@ -330,23 +330,24 @@ ${mainText}
                   )}
                 </button>
 
-                <div className="text-[11px] text-[var(--text3)] text-center leading-relaxed">
-                  本サービスをご利用いただくことで、<a href="/terms" className="underline underline-offset-2 hover:text-[var(--text2)]">利用規約</a>および<a href="/privacy" className="underline underline-offset-2 hover:text-[var(--text2)]">プライバシーポリシー</a>に<br />同意したものとみなされます。
-                </div>
-
                 {loading && (
-                  <div className="space-y-6 pt-4">
+                  <div className="space-y-4 pt-2">
+                    {/* 診断中を知らせるコメント */}
                     <div className="space-y-3">
                       <div className="h-0.5 bg-[var(--border)] overflow-hidden rounded-full">
                         <div className="h-full bg-[var(--accent)] animate-loading-slide w-[40%] rounded-full" />
                       </div>
-                      <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中...</div>
+                      <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中... しばらくお待ちください</div>
                     </div>
 
-                    {/* AdSense Placement */}
+                    {/* google Adds */}
                     <AdSenseLoading />
                   </div>
                 )}
+
+                <div className="text-[11px] text-[var(--text3)] text-center leading-relaxed">
+                  本サービスをご利用いただくことで、<a href="/terms" className="underline underline-offset-2 hover:text-[var(--text2)]">利用規約</a>および<a href="/privacy" className="underline underline-offset-2 hover:text-[var(--text2)]">プライバシーポリシー</a>に<br />同意したものとみなされます。
+                </div>
 
                 {error && (
                   <div className="p-4 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.3)] rounded-lg text-[var(--red)] text-sm flex gap-3 leading-relaxed">
