@@ -22,9 +22,16 @@ async function startServer() {
     }
 
     try {
-      const client = new GoogleGenAI({ apiKey });
-      // ユーザー指定の順序: 2.5-flash-lite -> 2.5-flash -> 1.5-flash
-      const models = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-1.5-flash"];
+      const client = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
+      // Use correct and supported models
+      const models = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
       let lastError = "";
 
       for (const modelName of models) {
