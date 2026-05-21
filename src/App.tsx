@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 import Home from './pages/Home';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
-import Contact from './pages/Contact';
 
 function Navbar() {
   return (
@@ -27,10 +26,21 @@ function Footer() {
       <div className="flex justify-center gap-8 mb-5 flex-wrap">
         <Link id="footer-terms" to="/terms" className="text-[var(--text3)] no-underline transition-colors hover:text-[var(--text2)] border-b border-transparent hover:border-b-[var(--border2)]">利用規約</Link>
         <Link id="footer-privacy" to="/privacy" className="text-[var(--text3)] no-underline transition-colors hover:text-[var(--text2)] border-b border-transparent hover:border-b-[var(--border2)]">プライバシーポリシー</Link>
-        <Link id="footer-contact" to="/contact" className="text-[var(--text3)] no-underline transition-colors hover:text-[var(--text2)] border-b border-transparent hover:border-b-[var(--border2)]">お問い合わせ</Link>
       </div>
       <div className="text-center font-mono text-[10px] tracking-widest">© 2026 asaki All Rights Reserved.</div>
     </footer>
+  );
+}
+
+function ServerSideBanner() {
+  const location = useLocation();
+  if (location.pathname !== '/') {
+    return null;
+  }
+  return (
+    <div className="bg-[#1a1200] border-b border-[#3d2e00] px-8 py-2 font-mono text-[11px] text-[#d4a017] flex items-center gap-2">
+      🛠 SERVER SIDE — <span className="opacity-60">APIキーはサーバー側で安全に管理されています</span>
+    </div>
   );
 }
 
@@ -42,25 +52,28 @@ function ScrollToTop() {
   return null;
 }
 
+function MainLayout() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <ServerSideBanner />
+      <Navbar />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col">
-        <div className="bg-[#1a1200] border-b border-[#3d2e00] px-8 py-2 font-mono text-[11px] text-[#d4a017] flex items-center gap-2">
-          🛠 SERVER SIDE — <span className="opacity-60">APIキーはサーバー側で安全に管理されています</span>
-        </div>
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <MainLayout />
     </Router>
   );
 }
