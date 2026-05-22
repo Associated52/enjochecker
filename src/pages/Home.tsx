@@ -51,7 +51,7 @@ interface AnalysisResult {
   analysis: string;
   suggestion: string;
 }
-
+{/*
 function AdSenseLoading() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +87,8 @@ function AdSenseLoading() {
     </div>
   );
 }
+*/}
+
 export default function Home() {
   const [selCat, setSelCat] = useState<typeof CATS[0] | null>(null);
   const [selSub, setSelSub] = useState<string | null>(null);
@@ -341,7 +343,8 @@ ${mainText}
                       </div>
                       <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中... しばらくお待ちください</div>
                     </div>
-                    <AdSenseLoading />
+                   {/* <AdSenseLoading />*/}
+
                   </div>
               
                 )}
