@@ -340,8 +340,7 @@ ${mainText}
                       <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中... しばらくお待ちください</div>
                     </div>
 
-                    {/* google Adds */}
-                    <AdSenseLoading />
+
                   </div>
                 )}
 
