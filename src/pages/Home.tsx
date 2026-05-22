@@ -52,6 +52,41 @@ interface AnalysisResult {
   suggestion: string;
 }
 
+function AdSenseLoading() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (containerRef.current) {
+        const ins = document.createElement('ins');
+        ins.className = 'adsbygoogle';
+        ins.style.cssText = 'display:block; text-align:center;';
+        ins.setAttribute('data-ad-layout', 'in-article');
+        ins.setAttribute('data-ad-format', 'fluid');
+        ins.setAttribute('data-ad-client', 'ca-pub-8520638973048541');
+        ins.setAttribute('data-ad-slot', '6980258773');
+        containerRef.current.appendChild(ins);
+        try {
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        } catch (err) {
+          console.error('AdSense push error: ', err);
+        }
+      }
+    }, 100);
+    return () => {
+      clearTimeout(timer);
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+    };
+  }, []);
+
+  return (
+    <div className="my-4 w-full min-h-[100px] bg-[var(--bg2)] rounded-xl border border-[var(--border)] overflow-hidden">
+      <div ref={containerRef} className="w-full" />
+    </div>
+  );
+}
 export default function Home() {
   const [selCat, setSelCat] = useState<typeof CATS[0] | null>(null);
   const [selSub, setSelSub] = useState<string | null>(null);
@@ -306,9 +341,9 @@ ${mainText}
                       </div>
                       <div className="font-mono text-[13px] text-[var(--text2)] text-center">AIが内容を分析中... しばらくお待ちください</div>
                     </div>
-
-
+                    <AdSenseLoading />
                   </div>
+              
                 )}
 
                 <div className="text-[11px] text-[var(--text3)] text-center leading-relaxed">
