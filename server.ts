@@ -34,9 +34,8 @@ async function startServer() {
       });
       // ユーザー指定の順序: 2.5-flash-lite -> 2.5-flash -> 1.5-flash -> 3.5-flash
       const models = [
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-flash",
-        "gemini-1.5-flash",
+          "gemini-2.0-flash",
+          "gemini-2.0-flash-lite",
       ];
       const errorsList: { model: string; code: string; message: string }[] = [];
 
