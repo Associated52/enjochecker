@@ -1,4 +1,4 @@
-import express from "express";
+  import express from "express";
 import path from "path";
 import https from "https";
 import fs from "fs";
@@ -112,8 +112,8 @@ async function startServer() {
 
   // HTTPSサーバー
   const sslOptions = {
-    key: fs.readFileSync("/etc/letsencrypt/live/enjochecker.pgw.jp/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/live/enjochecker.pgw.jp/fullchain.pem"),
+    key: fs.readFileSync("/home/ubuntu/enjochecker/privkey.pem"),
+    cert: fs.readFileSync("/home/ubuntu/enjochecker/fullchain.pem"),
   };
 
   https.createServer(sslOptions, app).listen(443, "0.0.0.0", () => {
