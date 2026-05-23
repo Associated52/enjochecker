@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://enjo-checker.onrender.com/sitemap.xml
+User-agent: Mediapartners-Google
+Allow: /
+
+Sitemap: https://enjochecker.pgw.jp/sitemap.xml
